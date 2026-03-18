@@ -51,3 +51,26 @@ export default function LuxuryDashboard() {
     </main>
   );
 }
+  const [lastBill, setLastBill] = useState<any>(null);
+
+  const onSubmit = async (data: any) => {
+    const billData = { 
+      ...data, 
+      date: new Date().toISOString(),
+      finance: { 
+        total: Number(data.total || 0), 
+        advance: Number(data.advance || 0), 
+        balance: Number(data.total || 0) - Number(data.advance || 0) 
+      } 
+    };
+    const id = await db.bills.add(billData);
+    setLastBill({ ...billData, id }); // Store this to show the Download button
+    alert("Bill Saved to Database!");
+    reset();
+  };
+  {lastBill && (
+    <div className="mt-4 p-4 border border-emerald-500/30 rounded-2xl bg-emerald-500/5">
+      <p className="text-xs text-center mb-3 text-emerald-400">Bill #RK-{lastBill.id} is ready</p>
+      <InvoicePDF data={lastBill} />
+    </div>
+  )}
